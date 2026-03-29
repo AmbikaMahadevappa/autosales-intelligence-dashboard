@@ -1,0 +1,51 @@
+Model,Region,Stock_Units,Days_Supply,Target_Min_DOS,Target_Max_DOS,Capacity_Util,Plan_Gap_Pct,Status
+3 Series,Europe,38307,86,45,60,79.3,-7.9,critical
+3 Series,Germany,13562,89,45,60,70.6,2.7,critical
+3 Series,USA,20131,86,45,60,86.0,2.0,critical
+3 Series,China,11664,39,45,60,68.5,17.2,warning
+3 Series,RoW,1835,39,45,60,68.9,-4.5,warning
+5 Series,Europe,9653,28,45,60,97.9,8.3,critical
+5 Series,Germany,9467,82,45,60,96.3,9.9,critical
+5 Series,USA,12409,70,45,60,67.7,-4.0,ok
+5 Series,China,17231,78,45,60,70.3,1.4,warning
+5 Series,RoW,2245,63,45,60,83.5,-10.6,ok
+X5,Europe,9642,30,45,60,94.5,-4.3,critical
+X5,Germany,8823,82,45,60,97.4,-2.7,critical
+X5,USA,13290,81,45,60,92.0,4.6,critical
+X5,China,6284,30,45,60,77.1,14.1,critical
+X5,RoW,1614,49,45,60,71.6,-0.2,ok
+iX,Europe,5980,30,45,60,70.1,12.6,critical
+iX,Germany,4692,69,45,60,64.8,-0.1,ok
+iX,USA,5848,56,45,60,83.9,8.3,ok
+iX,China,10218,78,45,60,74.9,4.8,warning
+iX,RoW,881,42,45,60,94.5,12.9,warning
+i4,Europe,19853,76,45,60,86.4,5.7,warning
+i4,Germany,6217,70,45,60,87.2,3.6,ok
+i4,USA,8868,65,45,60,89.9,-1.2,ok
+i4,China,7953,46,45,60,89.5,1.0,ok
+i4,RoW,964,35,45,60,92.3,0.2,warning
+7 Series,Europe,3895,25,45,60,72.6,8.9,critical
+7 Series,Germany,3413,65,45,60,98.3,-9.5,critical
+7 Series,USA,5340,66,45,60,82.0,5.2,ok
+7 Series,China,7632,75,45,60,66.0,1.7,warning
+7 Series,RoW,1413,87,45,60,74.6,11.0,critical
+X3,Europe,14907,66,45,60,96.5,-3.1,warning
+X3,Germany,3437,44,45,60,88.2,1.4,warning
+X3,USA,3486,29,45,60,83.5,8.4,critical
+X3,China,4149,27,45,60,94.2,-10.7,critical
+X3,RoW,2095,88,45,60,97.8,-3.9,critical
+M3,Europe,7715,74,45,60,62.9,2.6,warning
+M3,Germany,939,26,45,60,74.0,11.0,critical
+M3,USA,3794,69,45,60,78.5,-0.5,ok
+M3,China,2923,42,45,60,98.9,-10.1,critical
+M3,RoW,389,35,45,60,91.4,-15.4,warning
+Z4,Europe,3107,70,45,60,70.2,1.7,ok
+Z4,Germany,1024,67,45,60,72.1,-3.9,ok
+Z4,USA,2025,86,45,60,67.6,4.6,critical
+Z4,China,1524,52,45,60,85.6,-0.7,ok
+Z4,RoW,237,50,45,60,72.1,-0.3,ok
+iX1,Europe,14423,83,45,60,70.5,1.7,critical
+iX1,Germany,2306,38,45,60,63.2,-8.8,warning
+iX1,USA,7414,81,45,60,79.5,10.1,critical
+iX1,China,10038,87,45,60,68.9,2.4,critical
+iX1,RoW,1372,75,45,60,93.3,3.2,warning

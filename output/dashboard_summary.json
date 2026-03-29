@@ -1,0 +1,10 @@
+{
+  "generated_at": "2026-03-29T22:22:31.754923",
+  "total_units": 2210483,
+  "total_planned": 2163366,
+  "plan_accuracy": 95.99,
+  "anomaly_count": 33,
+  "critical_stock": 22,
+  "bev_share_pct": 27.87,
+  "top_model": "3 Series"
+}

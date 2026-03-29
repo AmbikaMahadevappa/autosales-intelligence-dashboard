@@ -1,0 +1,161 @@
+{
+  "summary": {
+    "total": 25,
+    "passed": 25,
+    "failed": 0,
+    "pass_rate": 100.0
+  },
+  "timestamp": "2026-03-29T22:31:13.528193",
+  "tests": [
+    {
+      "test": "S1: Volume DataFrame row count",
+      "status": "PASS",
+      "message": "Expected 120, got 120",
+      "timestamp": "2026-03-29T22:31:13.466657"
+    },
+    {
+      "test": "S2: Required columns present",
+      "status": "PASS",
+      "message": "Missing: set()",
+      "timestamp": "2026-03-29T22:31:13.466819"
+    },
+    {
+      "test": "S3: No null values in Actual/Planned/Variance",
+      "status": "PASS",
+      "message": "Nulls found: 0",
+      "timestamp": "2026-03-29T22:31:13.476003"
+    },
+    {
+      "test": "S4: All 10 models present",
+      "status": "PASS",
+      "message": "Missing: set()",
+      "timestamp": "2026-03-29T22:31:13.478353"
+    },
+    {
+      "test": "S5: Stock DataFrame non-empty",
+      "status": "PASS",
+      "message": "50 rows",
+      "timestamp": "2026-03-29T22:31:13.478406"
+    },
+    {
+      "test": "R1: Variance formula correctness",
+      "status": "PASS",
+      "message": "Expected 25.0, got 25.0",
+      "timestamp": "2026-03-29T22:31:13.478608"
+    },
+    {
+      "test": "R2: Plan accuracy formula in valid range",
+      "status": "PASS",
+      "message": "Got 95.99%",
+      "timestamp": "2026-03-29T22:31:13.479304"
+    },
+    {
+      "test": "R3: DataFrame rebuild has same schema",
+      "status": "PASS",
+      "message": "Schema match",
+      "timestamp": "2026-03-29T22:31:13.480676"
+    },
+    {
+      "test": "R4: Positive variance when Actual > Planned",
+      "status": "PASS",
+      "message": "Got 3.94",
+      "timestamp": "2026-03-29T22:31:13.482838"
+    },
+    {
+      "test": "R5: Seasonality factors sum near 12.0",
+      "status": "PASS",
+      "message": "Sum = 12.120",
+      "timestamp": "2026-03-29T22:31:13.482879"
+    },
+    {
+      "test": "R6: BEV models in dataset",
+      "status": "PASS",
+      "message": "Found: {'iX', 'i4', 'iX1'}",
+      "timestamp": "2026-03-29T22:31:13.484520"
+    },
+    {
+      "test": "E1: Monthly aggregation pipeline",
+      "status": "PASS",
+      "message": "12 months aggregated",
+      "timestamp": "2026-03-29T22:31:13.494577"
+    },
+    {
+      "test": "E2: Regional weights sum to 1.0",
+      "status": "PASS",
+      "message": "Sum = 1.000",
+      "timestamp": "2026-03-29T22:31:13.494639"
+    },
+    {
+      "test": "E3: Anomaly detection runs without error",
+      "status": "PASS",
+      "message": "Detected 8 anomalies",
+      "timestamp": "2026-03-29T22:31:13.498467"
+    },
+    {
+      "test": "E4: CSV export and re-import",
+      "status": "PASS",
+      "message": "5 rows re-imported",
+      "timestamp": "2026-03-29T22:31:13.519448"
+    },
+    {
+      "test": "E5: JSON summary serialises correctly",
+      "status": "PASS",
+      "message": "Total: 2,149,965 units",
+      "timestamp": "2026-03-29T22:31:13.521897"
+    },
+    {
+      "test": "E6: Pipeline output files exist",
+      "status": "PASS",
+      "message": "All 4 output files found",
+      "timestamp": "2026-03-29T22:31:13.523741"
+    },
+    {
+      "test": "U1: Plan accuracy \u2265 90% (business threshold)",
+      "status": "PASS",
+      "message": "Accuracy = 95.99%",
+      "timestamp": "2026-03-29T22:31:13.524564"
+    },
+    {
+      "test": "U2: No variance >20% in any month",
+      "status": "PASS",
+      "message": "Max variance = 13.08%",
+      "timestamp": "2026-03-29T22:31:13.524821"
+    },
+    {
+      "test": "U3: BEV share \u2265 20% (EU mandate floor)",
+      "status": "PASS",
+      "message": "BEV share = 27.87%",
+      "timestamp": "2026-03-29T22:31:13.525549"
+    },
+    {
+      "test": "U4: Stock status values are valid",
+      "status": "PASS",
+      "message": "Found: {'ok', 'critical', 'warning'}",
+      "timestamp": "2026-03-29T22:31:13.525822"
+    },
+    {
+      "test": "U5: Days of supply > 0 for all records",
+      "status": "PASS",
+      "message": "Min DOS = 25",
+      "timestamp": "2026-03-29T22:31:13.526056"
+    },
+    {
+      "test": "U6: Capacity utilisation in [0%, 100%]",
+      "status": "PASS",
+      "message": "Range: 62.4% \u2013 97.6%",
+      "timestamp": "2026-03-29T22:31:13.526320"
+    },
+    {
+      "test": "U7: All 12 months present in dataset",
+      "status": "PASS",
+      "message": "Months found: 12",
+      "timestamp": "2026-03-29T22:31:13.526652"
+    },
+    {
+      "test": "U8: Annual volume > 1M units (realistic scale)",
+      "status": "PASS",
+      "message": "Total: 2,149,965",
+      "timestamp": "2026-03-29T22:31:13.526771"
+    }
+  ]
+}

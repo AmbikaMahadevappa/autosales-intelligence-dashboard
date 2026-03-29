@@ -1,0 +1,34 @@
+Type,Severity,Model,Month,Description,Recommended
+Plan Deviation,Warning,3 Series,Jul 2025,Variance of +10.8% detected (threshold: ±10%),Review overstock risk
+Plan Deviation,Warning,5 Series,Aug 2025,Variance of +11.1% detected (threshold: ±10%),Review overstock risk
+Plan Deviation,Warning,iX,Feb 2025,Variance of +10.1% detected (threshold: ±10%),Review overstock risk
+Plan Deviation,Warning,iX,Mar 2025,Variance of -11.2% detected (threshold: ±10%),Recalibrate Q+1 plan
+Plan Deviation,Warning,7 Series,Mar 2025,Variance of +10.0% detected (threshold: ±10%),Review overstock risk
+Plan Deviation,Warning,7 Series,Jun 2025,Variance of +12.7% detected (threshold: ±10%),Review overstock risk
+Plan Deviation,Warning,M3,Oct 2025,Variance of +11.2% detected (threshold: ±10%),Review overstock risk
+Plan Deviation,Warning,M3,Dec 2025,Variance of +13.1% detected (threshold: ±10%),Review overstock risk
+Plan Deviation,Warning,iX1,May 2025,Variance of +12.6% detected (threshold: ±10%),Review overstock risk
+Overstock Risk,Warning,3 Series,Current,Europe: 86d supply (max target: 60d),Pause production order / push retail incentives
+Overstock Risk,Warning,3 Series,Current,Germany: 89d supply (max target: 60d),Pause production order / push retail incentives
+Overstock Risk,Warning,3 Series,Current,USA: 86d supply (max target: 60d),Pause production order / push retail incentives
+Stock Alert,Critical,5 Series,Current,Europe: Only 28d supply (min target: 45d),Emergency replenishment order
+Overstock Risk,Warning,5 Series,Current,Germany: 82d supply (max target: 60d),Pause production order / push retail incentives
+Overstock Risk,Warning,5 Series,Current,China: 78d supply (max target: 60d),Pause production order / push retail incentives
+Stock Alert,Critical,X5,Current,Europe: Only 30d supply (min target: 45d),Emergency replenishment order
+Overstock Risk,Warning,X5,Current,Germany: 82d supply (max target: 60d),Pause production order / push retail incentives
+Overstock Risk,Warning,X5,Current,USA: 81d supply (max target: 60d),Pause production order / push retail incentives
+Stock Alert,Critical,X5,Current,China: Only 30d supply (min target: 45d),Emergency replenishment order
+Stock Alert,Critical,iX,Current,Europe: Only 30d supply (min target: 45d),Emergency replenishment order
+Overstock Risk,Warning,iX,Current,China: 78d supply (max target: 60d),Pause production order / push retail incentives
+Overstock Risk,Warning,i4,Current,Europe: 76d supply (max target: 60d),Pause production order / push retail incentives
+Stock Alert,Critical,7 Series,Current,Europe: Only 25d supply (min target: 45d),Emergency replenishment order
+Overstock Risk,Warning,7 Series,Current,RoW: 87d supply (max target: 60d),Pause production order / push retail incentives
+Stock Alert,Critical,X3,Current,USA: Only 29d supply (min target: 45d),Emergency replenishment order
+Stock Alert,Critical,X3,Current,China: Only 27d supply (min target: 45d),Emergency replenishment order
+Overstock Risk,Warning,X3,Current,RoW: 88d supply (max target: 60d),Pause production order / push retail incentives
+Stock Alert,Critical,M3,Current,Germany: Only 26d supply (min target: 45d),Emergency replenishment order
+Overstock Risk,Warning,Z4,Current,USA: 86d supply (max target: 60d),Pause production order / push retail incentives
+Overstock Risk,Warning,iX1,Current,Europe: 83d supply (max target: 60d),Pause production order / push retail incentives
+Overstock Risk,Warning,iX1,Current,USA: 81d supply (max target: 60d),Pause production order / push retail incentives
+Overstock Risk,Warning,iX1,Current,China: 87d supply (max target: 60d),Pause production order / push retail incentives
+Capacity Overload,Critical,All Models,Current,Leipzig at 95.9% utilisation,Shift production to alternate plant or delay delivery
