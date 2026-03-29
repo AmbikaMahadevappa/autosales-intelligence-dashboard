@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoSales Intelligence Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0a0c10;
+    --surface: #10141c;
+    --surface2: #161b26;
+    --border: #1e2535;
+    --accent: #3b82f6;
+    --accent2: #06b6d4;
+    --accent3: #f59e0b;
+    --danger: #ef4444;
+    --success: #10b981;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --dim: #334155;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,12,16,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+
+  .logo {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .logo-mark {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; font-weight: 500; color: white;
+  }
+  .logo-text {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 15px; letter-spacing: 0.02em;
+  }
+  .logo-text span { color: var(--accent); }
+
+  .header-center {
+    display: flex; gap: 4px;
+  }
+  .tab {
+    padding: 6px 16px; border-radius: 6px; border: none;
+    background: transparent; color: var(--muted);
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .tab:hover { background: var(--surface2); color: var(--text); }
+  .tab.active { background: var(--surface2); color: var(--accent); }
+
+  .header-right {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .badge {
+    padding: 4px 10px; border-radius: 20px; font-size: 11px;
+    font-family: 'DM Mono', monospace; font-weight: 500;
+  }
+  .badge-live {
+    background: rgba(16,185,129,0.15);
+    color: var(--success);
+    border: 1px solid rgba(16,185,129,0.3);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .badge-live::before {
+    content: '';
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--success);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; } 50% { opacity: 0.3; }
+  }
+
+  .market-select {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); padding: 6px 12px; border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    cursor: pointer; outline: none;
+  }
+
+  /* MAIN LAYOUT */
+  .main { position: relative; z-index: 1; padding: 28px 32px; }
+
+  /* PAGE HEADER */
+  .page-header {
+    margin-bottom: 28px;
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px; font-weight: 800; letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .page-title span { color: var(--accent); }
+  .page-subtitle { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  .timeframe-toggle {
+    display: flex; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden;
+  }
+  .tf-btn {
+    padding: 6px 14px; border: none; background: transparent;
+    color: var(--muted); font-size: 12px; font-family: 'DM Mono', monospace;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .tf-btn.active { background: var(--accent); color: white; }
+
+  /* KPI GRID */
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px; margin-bottom: 24px;
+  }
+
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px;
+    position: relative; overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+    cursor: default;
+  }
+  .kpi-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .kpi-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .kpi-card:hover::before { opacity: 1; }
+
+  .kpi-label { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+  .kpi-value { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+  .kpi-unit { font-size: 14px; color: var(--muted); font-weight: 400; }
+  .kpi-delta {
+    margin-top: 8px; font-size: 12px; font-family: 'DM Mono', monospace;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .delta-up { color: var(--success); }
+  .delta-down { color: var(--danger); }
+  .kpi-spark { margin-top: 12px; height: 36px; opacity: 0.7; }
+
+  /* CHART GRID */
+  .chart-grid {
+    display: grid; grid-template-columns: 2fr 1fr;
+    gap: 16px; margin-bottom: 24px;
+  }
+  .chart-grid-3 {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px; margin-bottom: 24px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px;
+  }
+  .card-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px;
+  }
+  .card-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .card-tag {
+    font-size: 10px; font-family: 'DM Mono', monospace;
+    padding: 3px 8px; border-radius: 4px;
+    background: rgba(59,130,246,0.1); color: var(--accent);
+    border: 1px solid rgba(59,130,246,0.2);
+  }
+
+  canvas { max-height: 240px; }
+
+  /* SCENARIO TABLE */
+  .scenario-section { margin-bottom: 24px; }
+  .scenario-controls {
+    display: flex; gap: 16px; margin-bottom: 16px;
+    padding: 16px; background: var(--surface2); border-radius: 10px;
+    border: 1px solid var(--border); flex-wrap: wrap;
+  }
+  .control-group { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 140px; }
+  .control-label { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .control-slider { width: 100%; accent-color: var(--accent); cursor: pointer; }
+  .control-value {
+    font-family: 'DM Mono', monospace; font-size: 13px; color: var(--accent);
+    font-weight: 500;
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    text-align: left; font-size: 10px; font-family: 'DM Mono', monospace;
+    color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em;
+    padding: 8px 12px; border-bottom: 1px solid var(--border);
+  }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  tbody tr:hover { background: var(--surface2); }
+  tbody td { padding: 12px 12px; font-size: 13px; }
+  .td-model { font-weight: 500; }
+  .td-mono { font-family: 'DM Mono', monospace; font-size: 12px; }
+  .status-pill {
+    display: inline-block; padding: 2px 8px; border-radius: 20px;
+    font-size: 10px; font-family: 'DM Mono', monospace; font-weight: 500;
+  }
+  .status-ok { background: rgba(16,185,129,0.15); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+  .status-warn { background: rgba(245,158,11,0.15); color: var(--accent3); border: 1px solid rgba(245,158,11,0.3); }
+  .status-crit { background: rgba(239,68,68,0.15); color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
+
+  /* AI INSIGHTS */
+  .ai-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 22px;
+    margin-bottom: 24px;
+  }
+  .ai-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+  }
+  .ai-icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, #7c3aed, var(--accent));
+    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  .ai-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; }
+  .ai-subtitle { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  .insights-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .insight-card {
+    padding: 14px; border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    position: relative; overflow: hidden;
+  }
+  .insight-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; width: 3px; height: 100%;
+  }
+  .insight-card.positive::before { background: var(--success); }
+  .insight-card.warning::before { background: var(--accent3); }
+  .insight-card.negative::before { background: var(--danger); }
+
+  .insight-type { font-size: 10px; font-family: 'DM Mono', monospace; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+  .insight-text { font-size: 13px; line-height: 1.5; color: var(--text); }
+  .insight-impact {
+    margin-top: 8px; font-size: 11px; font-family: 'DM Mono', monospace;
+  }
+  .impact-pos { color: var(--success); }
+  .impact-neg { color: var(--danger); }
+  .impact-neu { color: var(--accent); }
+
+  /* FOOTER BAR */
+  .footer-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0; border-top: 1px solid var(--border);
+    font-size: 11px; font-family: 'DM Mono', monospace; color: var(--muted);
+    margin-top: 8px;
+  }
+
+  /* ANIMATIONS */
+  .fade-in { animation: fadeIn 0.5s ease forwards; opacity: 0; }
+  @keyframes fadeIn { to { opacity: 1; } }
+
+  .slide-up { animation: slideUp 0.4s ease forwards; opacity: 0; transform: translateY(16px); }
+  @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+  .kpi-card:nth-child(1) { animation: slideUp 0.4s 0.05s ease forwards; opacity: 0; }
+  .kpi-card:nth-child(2) { animation: slideUp 0.4s 0.10s ease forwards; opacity: 0; }
+  .kpi-card:nth-child(3) { animation: slideUp 0.4s 0.15s ease forwards; opacity: 0; }
+  .kpi-card:nth-child(4) { animation: slideUp 0.4s 0.20s ease forwards; opacity: 0; }
+
+  /* PROGRESS BARS */
+  .prog-bar-bg { background: var(--dim); border-radius: 4px; height: 6px; margin-top: 6px; overflow: hidden; }
+  .prog-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+
+  /* TABS CONTENT */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark">AS</div>
+    <div class="logo-text">Auto<span>Sales</span> Intelligence</div>
+  </div>
+  <div class="header-center">
+    <button class="tab active" onclick="switchTab('overview', this)">Overview</button>
+    <button class="tab" onclick="switchTab('scenario', this)">Scenario Planning</button>
+    <button class="tab" onclick="switchTab('stock', this)">Stock & Capacity</button>
+    <button class="tab" onclick="switchTab('ai', this)">AI Insights</button>
+  </div>
+  <div class="header-right">
+    <div class="badge badge-live">LIVE</div>
+    <select class="market-select" onchange="updateMarket(this.value)">
+      <option value="global">🌍 Global</option>
+      <option value="europe">🇪🇺 Europe</option>
+      <option value="germany">🇩🇪 Germany</option>
+      <option value="usa">🇺🇸 USA</option>
+      <option value="china">🇨🇳 China</option>
+    </select>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- OVERVIEW TAB -->
+  <div class="tab-content active" id="tab-overview">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Sales Volume <span>Planning</span></div>
+        <div class="page-subtitle">Q1–Q4 2025 · Global Market · Last updated: March 2026</div>
+      </div>
+      <div class="timeframe-toggle">
+        <button class="tf-btn active" onclick="setTimeframe('q1',this)">Q1</button>
+        <button class="tf-btn" onclick="setTimeframe('q2',this)">Q2</button>
+        <button class="tf-btn" onclick="setTimeframe('q3',this)">Q3</button>
+        <button class="tf-btn" onclick="setTimeframe('q4',this)">Q4</button>
+        <button class="tf-btn" onclick="setTimeframe('fy',this)">FY</button>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Total Units Sold</div>
+        <div class="kpi-value" id="kpi-units">2,487,310 <span class="kpi-unit">units</span></div>
+        <div class="kpi-delta delta-up" id="kpi-units-delta">▲ +8.3% vs last year</div>
+        <canvas class="kpi-spark" id="spark1"></canvas>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Revenue</div>
+        <div class="kpi-value" id="kpi-rev">€142.6 <span class="kpi-unit">bn</span></div>
+        <div class="kpi-delta delta-up" id="kpi-rev-delta">▲ +11.2% vs last year</div>
+        <canvas class="kpi-spark" id="spark2"></canvas>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Plan Accuracy</div>
+        <div class="kpi-value" id="kpi-acc">96.4 <span class="kpi-unit">%</span></div>
+        <div class="kpi-delta delta-up" id="kpi-acc-delta">▲ +2.1pp vs target</div>
+        <canvas class="kpi-spark" id="spark3"></canvas>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Stock Balance Index</div>
+        <div class="kpi-value" id="kpi-stock">0.91 <span class="kpi-unit">/ 1.0</span></div>
+        <div class="kpi-delta delta-down" id="kpi-stock-delta">▼ −0.04 vs target</div>
+        <canvas class="kpi-spark" id="spark4"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Monthly Sales Volume vs Plan</div>
+            <div class="card-subtitle">Actual units delivered vs planned allocation</div>
+          </div>
+          <div class="card-tag">VOLUME</div>
+        </div>
+        <canvas id="volumeChart"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Market Share by Region</div>
+            <div class="card-subtitle">Volume distribution 2025</div>
+          </div>
+          <div class="card-tag">REGIONAL</div>
+        </div>
+        <canvas id="marketShare" style="max-height:220px"></canvas>
+      </div>
+    </div>
+
+    <div class="chart-grid-3">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Top Models by Volume</div>
+            <div class="card-subtitle">Units sold this period</div>
+          </div>
+        </div>
+        <canvas id="modelsChart"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Powertrain Mix</div>
+            <div class="card-subtitle">BEV · PHEV · ICE split</div>
+          </div>
+        </div>
+        <canvas id="powertrainChart" style="max-height:220px"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Revenue per Model (€k avg)</div>
+            <div class="card-subtitle">Average transaction value</div>
+          </div>
+        </div>
+        <canvas id="revenueModel"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCENARIO TAB -->
+  <div class="tab-content" id="tab-scenario">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Scenario <span>Planning</span></div>
+        <div class="page-subtitle">Adjust parameters to model real-time volume forecasts</div>
+      </div>
+    </div>
+
+    <div class="scenario-section">
+      <div class="scenario-controls">
+        <div class="control-group">
+          <div class="control-label">Demand Uplift (%)</div>
+          <input type="range" class="control-slider" min="-20" max="30" value="0" id="sl-demand" oninput="updateScenario()">
+          <div class="control-value" id="val-demand">0%</div>
+        </div>
+        <div class="control-group">
+          <div class="control-label">Production Capacity (%)</div>
+          <input type="range" class="control-slider" min="60" max="110" value="90" id="sl-capacity" oninput="updateScenario()">
+          <div class="control-value" id="val-capacity">90%</div>
+        </div>
+        <div class="control-group">
+          <div class="control-label">BEV Mix Target (%)</div>
+          <input type="range" class="control-slider" min="10" max="60" value="28" id="sl-bev" oninput="updateScenario()">
+          <div class="control-value" id="val-bev">28%</div>
+        </div>
+        <div class="control-group">
+          <div class="control-label">Price Adjustment (%)</div>
+          <input type="range" class="control-slider" min="-10" max="15" value="0" id="sl-price" oninput="updateScenario()">
+          <div class="control-value" id="val-price">0%</div>
+        </div>
+        <div class="control-group">
+          <div class="control-label">Market (Europe weight)</div>
+          <input type="range" class="control-slider" min="20" max="60" value="38" id="sl-eu" oninput="updateScenario()">
+          <div class="control-value" id="val-eu">38%</div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Scenario Forecast — 12-Month Volume</div>
+              <div class="card-subtitle">Base · Optimistic · Pessimistic bands</div>
+            </div>
+            <div class="card-tag">SCENARIO</div>
+          </div>
+          <canvas id="scenarioChart" style="max-height:260px"></canvas>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">KPI Impact Summary</div>
+              <div class="card-subtitle">Scenario delta vs baseline</div>
+            </div>
+          </div>
+          <div id="scenario-kpi-grid" style="display:flex;flex-direction:column;gap:12px;margin-top:4px;">
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                <span style="color:var(--muted);font-family:'DM Mono',monospace">PROJ. VOLUME</span>
+                <span id="sc-vol" style="color:var(--accent);font-family:'DM Mono',monospace">2,487,310</span>
+              </div>
+              <div class="prog-bar-bg"><div class="prog-bar-fill" id="bar-vol" style="width:70%;background:var(--accent)"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                <span style="color:var(--muted);font-family:'DM Mono',monospace">PROJ. REVENUE</span>
+                <span id="sc-rev" style="color:var(--success);font-family:'DM Mono',monospace">€142.6bn</span>
+              </div>
+              <div class="prog-bar-bg"><div class="prog-bar-fill" id="bar-rev" style="width:75%;background:var(--success)"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                <span style="color:var(--muted);font-family:'DM Mono',monospace">BEV SHARE</span>
+                <span id="sc-bev" style="color:var(--accent2);font-family:'DM Mono',monospace">28.0%</span>
+              </div>
+              <div class="prog-bar-bg"><div class="prog-bar-fill" id="bar-bev" style="width:28%;background:var(--accent2)"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                <span style="color:var(--muted);font-family:'DM Mono',monospace">PLAN ACCURACY</span>
+                <span id="sc-acc" style="color:var(--accent3);font-family:'DM Mono',monospace">96.4%</span>
+              </div>
+              <div class="prog-bar-bg"><div class="prog-bar-fill" id="bar-acc" style="width:96%;background:var(--accent3)"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                <span style="color:var(--muted);font-family:'DM Mono',monospace">CAPACITY UTIL.</span>
+                <span id="sc-cap" style="color:var(--danger);font-family:'DM Mono',monospace">90.0%</span>
+              </div>
+              <div class="prog-bar-bg"><div class="prog-bar-fill" id="bar-cap" style="width:90%;background:var(--danger)"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STOCK TAB -->
+  <div class="tab-content" id="tab-stock">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Stock & <span>Capacity</span> Balancing</div>
+        <div class="page-subtitle">Inventory levels, production capacity, and delivery pipeline</div>
+      </div>
+    </div>
+
+    <div class="chart-grid" style="margin-bottom:16px">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Inventory Days of Supply by Model</div>
+            <div class="card-subtitle">Target: 45–60 days. Red = critical imbalance</div>
+          </div>
+          <div class="card-tag">STOCK</div>
+        </div>
+        <canvas id="daysSupplyChart" style="max-height:240px"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Plant Capacity Utilisation</div>
+            <div class="card-subtitle">By production facility</div>
+          </div>
+        </div>
+        <canvas id="capacityChart" style="max-height:240px"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Model Stock Status — Live Tracker</div>
+          <div class="card-subtitle">Real-time stock, capacity, and plan alignment per model</div>
+        </div>
+        <div class="card-tag">LIVE</div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>Region</th>
+            <th>Stock (units)</th>
+            <th>Days Supply</th>
+            <th>Prod. Capacity %</th>
+            <th>Plan vs Actual</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="stock-table"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- AI INSIGHTS TAB -->
+  <div class="tab-content" id="tab-ai">
+    <div class="page-header">
+      <div>
+        <div class="page-title">AI <span>Insights</span></div>
+        <div class="page-subtitle">Automated anomaly detection · Forecast deviation alerts · Optimisation recommendations</div>
+      </div>
+    </div>
+
+    <div class="ai-panel">
+      <div class="ai-header">
+        <div class="ai-icon">🤖</div>
+        <div>
+          <div class="ai-title">Intelligent Planning Assistant</div>
+          <div class="ai-subtitle">LSTM-based anomaly detection · Rule-based risk engine · Auto-generated recommendations</div>
+        </div>
+      </div>
+      <div class="insights-grid" id="ai-insights-grid"></div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Forecast vs Actual — AI Detection Bands</div>
+            <div class="card-subtitle">Shaded = model confidence interval. Flags = detected anomalies</div>
+          </div>
+          <div class="card-tag">ML MODEL</div>
+        </div>
+        <canvas id="forecastChart" style="max-height:260px"></canvas>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Defect / Issue Tracker</div>
+            <div class="card-subtitle">Open planning deviations requiring action</div>
+          </div>
+          <div class="card-tag">ISSUES</div>
+        </div>
+        <div id="defect-list" style="display:flex;flex-direction:column;gap:8px;margin-top:4px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bar">
+    <span>AutoSales Intelligence Dashboard · Built by Ambika Sugganahalli Mahadevappa · 2026</span>
+    <span>Data: Simulated · Tools: Python · Chart.js · Vanilla JS · HTML/CSS</span>
+    <span>v1.0.0 · BMW IT Intern Portfolio Project</span>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  DATA ENGINE
+// ============================================================
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MODELS = ['3 Series','5 Series','X5','iX','i4','7 Series','X3','M3','Z4','iX1'];
+const REGIONS = ['Europe','Germany','USA','China','RoW'];
+const PLANTS = ['Munich','Leipzig','Dingolfing','Spartanburg','Shenyang'];
+
+function rnd(a,b) { return a + Math.random()*(b-a); }
+function rndInt(a,b) { return Math.round(rnd(a,b)); }
+function seed(n) { return ((n * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff; }
+
+function genMonthlyVolume(base=210000, noise=0.06) {
+  const seasonality = [0.88,0.82,1.05,1.08,1.12,1.04,0.95,1.00,1.10,1.08,0.92,1.08];
+  return MONTHS.map((m,i) => Math.round(base * seasonality[i] * (1 + (seed(i*7)-0.5)*noise)));
+}
+
+const actual = genMonthlyVolume(207250, 0.04);
+const planned = genMonthlyVolume(205000, 0.02);
+const optimistic = actual.map(v => Math.round(v * 1.08));
+const pessimistic = actual.map(v => Math.round(v * 0.93));
+
+const marketData = {
+  global:  { units: 2487310, rev: 142.6, acc: 96.4, stock: 0.91 },
+  europe:  { units: 945200,  rev: 54.2,  acc: 97.1, stock: 0.94 },
+  germany: { units: 312400,  rev: 18.9,  acc: 98.2, stock: 0.97 },
+  usa:     { units: 498000,  rev: 31.4,  acc: 95.3, stock: 0.88 },
+  china:   { units: 621000,  rev: 34.8,  acc: 94.7, stock: 0.86 },
+};
+
+const modelVolumes = [420000,318000,295000,187000,245000,145000,213000,98000,42000,164000];
+const modelRevenues = [42,68,87,79,55,112,58,95,56,38];
+const daysSupply = [52,48,38,71,44,65,30,88,50,43];
+
+const stockTableData = [
+  { model:'iX', region:'Europe', stock:28400, days:71, cap:78, planVsAct:-8.2, status:'warn' },
+  { model:'X3', region:'Germany', stock:9200,  days:30, cap:98, planVsAct:-12.4, status:'crit' },
+  { model:'M3', region:'USA',    stock:18900, days:88, cap:62, planVsAct:+5.1, status:'warn' },
+  { model:'3 Series', region:'China', stock:64200, days:52, cap:91, planVsAct:+1.2, status:'ok' },
+  { model:'5 Series', region:'Europe', stock:41800, days:48, cap:88, planVsAct:-2.1, status:'ok' },
+  { model:'X5', region:'USA',   stock:38000, days:38, cap:96, planVsAct:-9.7, status:'warn' },
+  { model:'i4', region:'Global', stock:31200, days:44, cap:84, planVsAct:+0.4, status:'ok' },
+  { model:'7 Series', region:'China', stock:24100, days:65, cap:74, planVsAct:+3.8, status:'ok' },
+];
+
+const aiInsights = [
+  { type:'anomaly', sentiment:'negative', text:'X3 stock in Germany has fallen below 30-day supply threshold. Production capacity at 98% — bottleneck detected at Leipzig plant.', impact:'−12.4% vs plan', cls:'negative' },
+  { type:'recommendation', sentiment:'positive', text:'iX demand in Europe trending +18% above Q4 forecast. Recommend reallocating 3,200 units from RoW allocation to EU markets.', impact:'+€184M revenue potential', cls:'positive' },
+  { type:'forecast deviation', sentiment:'warning', text:'M3 inventory in USA at 88 days supply (target: 45–60). Demand softening detected. Recommend reducing Q2 production order by 800 units.', impact:'Risk: €42M overstock', cls:'warning' },
+  { type:'optimisation', sentiment:'positive', text:'BEV mix (iX + i4) tracking at 28.4% — ahead of 27% target. Spartanburg EV line running at only 76% — capacity available for demand uplift.', impact:'On track for EU mandate', cls:'positive' },
+  { type:'risk alert', sentiment:'negative', text:'Shenyang plant scheduled maintenance in Week 18 will reduce China output by ~9,400 units. Plan adjustment required for Q2 China allocation.', impact:'−9,400 units Q2 China', cls:'negative' },
+  { type:'data integrity', sentiment:'positive', text:'All 12 market feeds reconciled. Plan vs actual variance within ±3% for 9 of 10 models. Data integrity score: 98.7%.', impact:'98.7% integrity score', cls:'positive' },
+];
+
+const defectItems = [
+  { id:'DEF-001', model:'X3', market:'Germany', issue:'Stock below critical threshold (30 DOS)', severity:'crit', owner:'Central Planning', days:3 },
+  { id:'DEF-002', model:'X5', market:'USA', issue:'Plan vs actual gap >9% — forecast recalibration needed', severity:'warn', owner:'NA Volume Team', days:1 },
+  { id:'DEF-003', model:'M3', market:'USA', issue:'Overstock risk — 88 DOS exceeds 60-day ceiling', severity:'warn', owner:'Retail Ops', days:5 },
+  { id:'DEF-004', model:'iX', market:'Europe', issue:'Demand surge +18% — reallocation pending approval', severity:'warn', owner:'EU Planner', days:2 },
+  { id:'DEF-005', model:'7 Series', market:'China', issue:'Maintenance impact: Q2 production plan not yet adjusted', severity:'crit', owner:'Asia Pacific', days:0 },
+];
+
+// ============================================================
+//  CHART THEME
+// ============================================================
+Chart.defaults.color = '#64748b';
+Chart.defaults.font.family = "'DM Mono', monospace";
+Chart.defaults.font.size = 11;
+
+const PALETTE = ['#3b82f6','#06b6d4','#f59e0b','#10b981','#ef4444','#8b5cf6','#f97316','#ec4899','#14b8a6','#84cc16'];
+
+let charts = {};
+
+function destroyChart(id) {
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+}
+
+// ============================================================
+//  SPARKLINES
+// ============================================================
+function drawSpark(id, data, color) {
+  const canvas = document.getElementById(id);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  canvas.width = canvas.offsetWidth || 200;
+  canvas.height = 36;
+  const w = canvas.width, h = canvas.height;
+  const min = Math.min(...data), max = Math.max(...data);
+  const pts = data.map((v,i) => [i/(data.length-1)*w, h - (v-min)/(max-min)*h]);
+  const grad = ctx.createLinearGradient(0,0,0,h);
+  grad.addColorStop(0, color+'44');
+  grad.addColorStop(1, color+'00');
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  pts.slice(1).forEach(p => ctx.lineTo(p[0], p[1]));
+  ctx.lineTo(w,h); ctx.lineTo(0,h);
+  ctx.closePath();
+  ctx.fillStyle = grad; ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(pts[0][0], pts[0][1]);
+  pts.slice(1).forEach(p => ctx.lineTo(p[0], p[1]));
+  ctx.strokeStyle = color; ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+// ============================================================
+//  CHART BUILDERS
+// ============================================================
+function buildOverviewCharts() {
+  destroyChart('volumeChart');
+  charts['volumeChart'] = new Chart(document.getElementById('volumeChart'), {
+    type: 'bar',
+    data: {
+      labels: MONTHS,
+      datasets: [
+        { label:'Actual', data: actual, backgroundColor: 'rgba(59,130,246,0.7)', borderRadius: 4, borderSkipped: false },
+        { label:'Planned', data: planned, type:'line', borderColor:'#f59e0b', borderWidth:2, pointRadius:3, fill:false, tension:0.3 }
+      ]
+    },
+    options: {
+      responsive:true, interaction:{mode:'index'},
+      plugins:{ legend:{labels:{color:'#94a3b8', usePointStyle:true, boxWidth:8}} },
+      scales:{
+        x:{grid:{color:'#1e2535'}, ticks:{color:'#64748b'}},
+        y:{grid:{color:'#1e2535'}, ticks:{color:'#64748b', callback:v=>v/1000+'k'}}
+      }
+    }
+  });
+
+  destroyChart('marketShare');
+  charts['marketShare'] = new Chart(document.getElementById('marketShare'), {
+    type:'doughnut',
+    data:{
+      labels: REGIONS,
+      datasets:[{ data:[38,13,20,25,4], backgroundColor: PALETTE, borderWidth:2, borderColor:'#10141c', hoverOffset:8 }]
+    },
+    options:{
+      plugins:{ legend:{position:'bottom', labels:{color:'#94a3b8', usePointStyle:true, boxWidth:8, padding:8}} }
+    }
+  });
+
+  destroyChart('modelsChart');
+  charts['modelsChart'] = new Chart(document.getElementById('modelsChart'), {
+    type:'bar',
+    data:{
+      labels: MODELS,
+      datasets:[{ label:'Units', data:modelVolumes, backgroundColor: PALETTE, borderRadius:4, borderSkipped:false }]
+    },
+    options:{
+      indexAxis:'y', responsive:true,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{color:'#1e2535'}, ticks:{color:'#64748b', callback:v=>v/1000+'k'}},
+        y:{grid:{display:false}, ticks:{color:'#94a3b8'}}
+      }
+    }
+  });
+
+  destroyChart('powertrainChart');
+  charts['powertrainChart'] = new Chart(document.getElementById('powertrainChart'), {
+    type:'doughnut',
+    data:{
+      labels:['ICE','PHEV','BEV'],
+      datasets:[{ data:[56,16,28], backgroundColor:['#334155','#06b6d4','#3b82f6'], borderWidth:2, borderColor:'#10141c', hoverOffset:8 }]
+    },
+    options:{
+      plugins:{ legend:{position:'bottom', labels:{color:'#94a3b8', usePointStyle:true, boxWidth:8, padding:8}} }
+    }
+  });
+
+  destroyChart('revenueModel');
+  charts['revenueModel'] = new Chart(document.getElementById('revenueModel'), {
+    type:'bar',
+    data:{
+      labels: MODELS,
+      datasets:[{ label:'Avg €k', data:modelRevenues, backgroundColor:'rgba(16,185,129,0.7)', borderRadius:4, borderSkipped:false }]
+    },
+    options:{
+      indexAxis:'y', responsive:true,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{color:'#1e2535'}, ticks:{color:'#64748b', callback:v=>'€'+v+'k'}},
+        y:{grid:{display:false}, ticks:{color:'#94a3b8'}}
+      }
+    }
+  });
+}
+
+function buildScenarioChart() {
+  destroyChart('scenarioChart');
+  charts['scenarioChart'] = new Chart(document.getElementById('scenarioChart'), {
+    type:'line',
+    data:{
+      labels: MONTHS,
+      datasets:[
+        { label:'Optimistic', data:optimistic, borderColor:'#10b981', borderWidth:1.5, borderDash:[4,4], fill:false, pointRadius:0, tension:0.3 },
+        { label:'Base (Actual)', data:actual, borderColor:'#3b82f6', borderWidth:2.5, fill:false, pointRadius:4, pointHoverRadius:6, tension:0.3 },
+        { label:'Pessimistic', data:pessimistic, borderColor:'#ef4444', borderWidth:1.5, borderDash:[4,4], fill:false, pointRadius:0, tension:0.3 },
+        { label:'Planned', data:planned, borderColor:'#f59e0b', borderWidth:1.5, borderDash:[2,4], fill:false, pointRadius:0, tension:0.3 },
+      ]
+    },
+    options:{
+      responsive:true, interaction:{mode:'index'},
+      plugins:{legend:{labels:{color:'#94a3b8', usePointStyle:true, boxWidth:8}}},
+      scales:{
+        x:{grid:{color:'#1e2535'}, ticks:{color:'#64748b'}},
+        y:{grid:{color:'#1e2535'}, ticks:{color:'#64748b', callback:v=>v/1000+'k'}}
+      }
+    }
+  });
+}
+
+function buildStockCharts() {
+  destroyChart('daysSupplyChart');
+  const dsColors = daysSupply.map(d => d < 40 ? '#ef4444' : d > 70 ? '#f59e0b' : '#10b981');
+  charts['daysSupplyChart'] = new Chart(document.getElementById('daysSupplyChart'), {
+    type:'bar',
+    data:{
+      labels: MODELS,
+      datasets:[
+        { label:'Days of Supply', data:daysSupply, backgroundColor:dsColors, borderRadius:4, borderSkipped:false },
+        { label:'Min Target (45d)', data:Array(10).fill(45), type:'line', borderColor:'#3b82f6', borderDash:[4,4], borderWidth:1.5, pointRadius:0, fill:false },
+        { label:'Max Target (60d)', data:Array(10).fill(60), type:'line', borderColor:'#3b82f6', borderDash:[2,4], borderWidth:1.5, pointRadius:0, fill:false },
+      ]
+    },
+    options:{
+      responsive:true,
+      plugins:{legend:{labels:{color:'#94a3b8', usePointStyle:true, boxWidth:8}}},
+      scales:{
+        x:{grid:{color:'#1e2535'}, ticks:{color:'#94a3b8'}},
+        y:{grid:{color:'#1e2535'}, ticks:{color:'#64748b'}, min:0, max:100, title:{display:true, text:'Days', color:'#64748b'}}
+      }
+    }
+  });
+
+  destroyChart('capacityChart');
+  const capData = [88,94,91,83,76];
+  const capColors = capData.map(v => v > 95 ? '#ef4444' : v > 85 ? '#f59e0b' : '#10b981');
+  charts['capacityChart'] = new Chart(document.getElementById('capacityChart'), {
+    type:'bar',
+    data:{
+      labels: PLANTS,
+      datasets:[{ label:'Utilisation %', data:capData, backgroundColor:capColors, borderRadius:6, borderSkipped:false }]
+    },
+    options:{
+      indexAxis:'y', responsive:true,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{color:'#1e2535'}, ticks:{color:'#64748b', callback:v=>v+'%'}, min:0, max:110},
+        y:{grid:{display:false}, ticks:{color:'#94a3b8'}}
+      }
+    }
+  });
+
+  // Build stock table
+  const tbody = document.getElementById('stock-table');
+  tbody.innerHTML = '';
+  stockTableData.forEach(r => {
+    const statusMap = { ok:'<span class="status-pill status-ok">✓ Balanced</span>', warn:'<span class="status-pill status-warn">⚠ Review</span>', crit:'<span class="status-pill status-crit">✗ Critical</span>' };
+    const deltaColor = r.planVsAct < 0 ? 'color:var(--danger)' : 'color:var(--success)';
+    tbody.innerHTML += `<tr>
+      <td class="td-model">${r.model}</td>
+      <td style="color:var(--muted)">${r.region}</td>
+      <td class="td-mono">${r.stock.toLocaleString()}</td>
+      <td class="td-mono" style="${r.days<40?'color:var(--danger)':r.days>70?'color:var(--accent3)':'color:var(--success)'}">${r.days}d</td>
+      <td class="td-mono" style="${r.cap>95?'color:var(--danger)':r.cap>85?'color:var(--accent3)':'color:var(--success)'}">${r.cap}%</td>
+      <td class="td-mono" style="${deltaColor}">${r.planVsAct > 0 ? '+' : ''}${r.planVsAct}%</td>
+      <td>${statusMap[r.status]}</td>
+    </tr>`;
+  });
+}
+
+function buildAICharts() {
+  // Insights grid
+  const grid = document.getElementById('ai-insights-grid');
+  grid.innerHTML = '';
+  aiInsights.forEach(ins => {
+    const impactColor = ins.cls === 'positive' ? 'impact-pos' : ins.cls === 'negative' ? 'impact-neg' : 'impact-neu';
+    grid.innerHTML += `<div class="insight-card ${ins.cls}">
+      <div class="insight-type">${ins.type.toUpperCase()}</div>
+      <div class="insight-text">${ins.text}</div>
+      <div class="insight-impact ${impactColor}">→ ${ins.impact}</div>
+    </div>`;
+  });
+
+  // Forecast chart
+  const forecastActual = actual.map((v,i) => v + rndInt(-3000,3000));
+  const forecastUpper = actual.map(v => Math.round(v*1.05));
+  const forecastLower = actual.map(v => Math.round(v*0.95));
+
+  destroyChart('forecastChart');
+  charts['forecastChart'] = new Chart(document.getElementById('forecastChart'), {
+    type:'line',
+    data:{
+      labels:MONTHS,
+      datasets:[
+        { label:'Upper Bound', data:forecastUpper, borderColor:'rgba(59,130,246,0.2)', borderWidth:1, fill:'+2', backgroundColor:'rgba(59,130,246,0.07)', pointRadius:0, tension:0.3 },
+        { label:'Forecast', data:actual, borderColor:'#3b82f6', borderWidth:2.5, fill:false, pointRadius:4, tension:0.3 },
+        { label:'Lower Bound', data:forecastLower, borderColor:'rgba(59,130,246,0.2)', borderWidth:1, fill:false, pointRadius:0, tension:0.3 },
+        { label:'Actual', data:forecastActual, borderColor:'#10b981', borderWidth:2, fill:false, borderDash:[4,2], pointRadius:3, tension:0.3 },
+      ]
+    },
+    options:{
+      responsive:true, interaction:{mode:'index'},
+      plugins:{legend:{labels:{color:'#94a3b8', usePointStyle:true, boxWidth:8}}},
+      scales:{
+        x:{grid:{color:'#1e2535'}, ticks:{color:'#64748b'}},
+        y:{grid:{color:'#1e2535'}, ticks:{color:'#64748b', callback:v=>v/1000+'k'}}
+      }
+    }
+  });
+
+  // Defect list
+  const defectDiv = document.getElementById('defect-list');
+  defectDiv.innerHTML = '';
+  defectItems.forEach(d => {
+    const sevMap = { crit:'status-crit', warn:'status-warn' };
+    const sevLabel = { crit:'CRITICAL', warn:'WARNING' };
+    defectDiv.innerHTML += `<div style="padding:12px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">${d.id}</span>
+          <span class="status-pill ${sevMap[d.severity]}">${sevLabel[d.severity]}</span>
+        </div>
+        <div style="font-size:13px;font-weight:500;margin-bottom:2px;">${d.model} · ${d.market}</div>
+        <div style="font-size:12px;color:var(--muted)">${d.issue}</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;">
+        <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace">${d.owner}</div>
+        <div style="font-size:11px;color:var(--accent3);margin-top:4px;">${d.days === 0 ? 'Today' : d.days + 'd ago'}</div>
+      </div>
+    </div>`;
+  });
+}
+
+// ============================================================
+//  SPARKLINE DATA
+// ============================================================
+function drawAllSparks() {
+  drawSpark('spark1', actual.slice(0,8), '#3b82f6');
+  drawSpark('spark2', actual.slice(0,8).map(v => v * 57.3), '#10b981');
+  drawSpark('spark3', [94,95,96,94,97,96,96.4,96.4].map(v => v + rnd(-0.3,0.3)), '#f59e0b');
+  drawSpark('spark4', [0.87,0.88,0.90,0.89,0.91,0.90,0.91,0.91].map(v => v + rnd(-0.01,0.01)), '#06b6d4');
+}
+
+// ============================================================
+//  TAB SWITCHING
+// ============================================================
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+
+  setTimeout(() => {
+    if (name === 'overview') buildOverviewCharts();
+    if (name === 'scenario') buildScenarioChart();
+    if (name === 'stock') buildStockCharts();
+    if (name === 'ai') buildAICharts();
+  }, 50);
+}
+
+// ============================================================
+//  MARKET UPDATE
+// ============================================================
+function updateMarket(market) {
+  const d = marketData[market] || marketData.global;
+  document.getElementById('kpi-units').innerHTML = d.units.toLocaleString() + ' <span class="kpi-unit">units</span>';
+  document.getElementById('kpi-rev').innerHTML = '€' + d.rev + ' <span class="kpi-unit">bn</span>';
+  document.getElementById('kpi-acc').innerHTML = d.acc + ' <span class="kpi-unit">%</span>';
+  document.getElementById('kpi-stock').innerHTML = d.stock + ' <span class="kpi-unit">/ 1.0</span>';
+}
+
+// ============================================================
+//  TIMEFRAME
+// ============================================================
+function setTimeframe(tf, btn) {
+  document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // Rescale volume chart
+  const multipliers = { q1:0.25, q2:0.25, q3:0.25, q4:0.25, fy:1.0 };
+  const m = multipliers[tf];
+  if (charts['volumeChart']) {
+    const subset = tf === 'fy' ? actual : actual.slice({'q1':0,'q2':3,'q3':6,'q4':9}[tf], {'q1':3,'q2':6,'q3':9,'q4':12}[tf]);
+    const psubset = tf === 'fy' ? planned : planned.slice({'q1':0,'q2':3,'q3':6,'q4':9}[tf], {'q1':3,'q2':6,'q3':9,'q4':12}[tf]);
+    const labels = tf === 'fy' ? MONTHS : MONTHS.slice({'q1':0,'q2':3,'q3':6,'q4':9}[tf], {'q1':3,'q2':6,'q3':9,'q4':12}[tf]);
+    charts['volumeChart'].data.labels = labels;
+    charts['volumeChart'].data.datasets[0].data = subset;
+    charts['volumeChart'].data.datasets[1].data = psubset;
+    charts['volumeChart'].update();
+  }
+}
+
+// ============================================================
+//  SCENARIO ENGINE
+// ============================================================
+function updateScenario() {
+  const demand = +document.getElementById('sl-demand').value;
+  const capacity = +document.getElementById('sl-capacity').value;
+  const bev = +document.getElementById('sl-bev').value;
+  const price = +document.getElementById('sl-price').value;
+  const eu = +document.getElementById('sl-eu').value;
+
+  document.getElementById('val-demand').textContent = (demand >= 0 ? '+' : '') + demand + '%';
+  document.getElementById('val-capacity').textContent = capacity + '%';
+  document.getElementById('val-bev').textContent = bev + '%';
+  document.getElementById('val-price').textContent = (price >= 0 ? '+' : '') + price + '%';
+  document.getElementById('val-eu').textContent = eu + '%';
+
+  const baseVol = 2487310;
+  const projVol = Math.round(baseVol * (1 + demand/100) * (capacity/90));
+  const projRev = (projVol * 57300 * (1 + price/100) / 1e9).toFixed(1);
+  const projAcc = Math.min(99.5, Math.max(88, 96.4 - Math.abs(demand)*0.15 - Math.abs(price)*0.1)).toFixed(1);
+
+  document.getElementById('sc-vol').textContent = projVol.toLocaleString();
+  document.getElementById('sc-rev').textContent = '€' + projRev + 'bn';
+  document.getElementById('sc-bev').textContent = bev.toFixed(1) + '%';
+  document.getElementById('sc-acc').textContent = projAcc + '%';
+  document.getElementById('sc-cap').textContent = capacity + '%';
+
+  const pct = v => Math.min(100, Math.max(0, v));
+  document.getElementById('bar-vol').style.width = pct(projVol/3500000*100) + '%';
+  document.getElementById('bar-rev').style.width = pct(+projRev/200*100) + '%';
+  document.getElementById('bar-bev').style.width = pct(bev) + '%';
+  document.getElementById('bar-acc').style.width = projAcc + '%';
+  document.getElementById('bar-cap').style.width = capacity + '%';
+
+  // Update scenario chart
+  if (charts['scenarioChart']) {
+    const factor = (1 + demand/100) * (capacity/90);
+    charts['scenarioChart'].data.datasets[1].data = actual.map(v => Math.round(v * factor));
+    charts['scenarioChart'].data.datasets[0].data = actual.map(v => Math.round(v * factor * 1.07));
+    charts['scenarioChart'].data.datasets[2].data = actual.map(v => Math.round(v * factor * 0.93));
+    charts['scenarioChart'].update('none');
+  }
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+window.addEventListener('load', () => {
+  buildOverviewCharts();
+  drawAllSparks();
+});
+</script>
+</body>
+</html>
