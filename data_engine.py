@@ -2,7 +2,7 @@
 AutoSales Intelligence Dashboard — Data Generator & Analysis Engine
 ====================================================================
 Author  : Ambika Sugganahalli Mahadevappa
-Project : BMW IT Intern Portfolio Project — Sales Volume Planning & AI Support
+Project : Automotive Intelligence Portfolio Project — Sales Volume Planning & AI Support
 Tools   : Python 3.x · pandas · numpy · matplotlib
 Purpose : Generates simulated automotive sales data, performs volume planning
           analysis, detects anomalies, and exports KPI reports.
@@ -38,7 +38,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 print("=" * 65)
 print("  AutoSales Intelligence Dashboard — Data Engine")
-print("  BMW IT Intern Portfolio Project")
+print(" Automotive Sales Intelligence Dashboard")
 print("=" * 65)
 
 # ─────────────────────────────────────────────────────────────
