@@ -1,50 +1,208 @@
 # AutoSales Intelligence Dashboard
 
-> Sales Volume Planning, Stock Balancing & AI-Powered Insights
+> **Sales Volume Planning, Stock Balancing & AI-Powered Insights for Automotive Markets**
+>
 > Portfolio Project · Ambika Sugganahalli Mahadevappa · 2026
 
 ---
 
 ## Project Overview
 
-The **AutoSales Intelligence Dashboard** is a full-stack data intelligence tool for automotive sales volume planning. It simulates how planners balance **production capacity**, **stock levels**, **sales forecasts**, and **market KPIs** — and demonstrates skills in data visualisation, anomaly detection, and dashboard development directly applicable to quality monitoring roles in the automotive industry.
+The **AutoSales Intelligence Dashboard** is a full-stack data intelligence tool that mirrors the core workflows of automotive sales volume planning departments. It simulates how global volume planners balance **production capacity**, **stock levels**, **sales forecasts**, and **market KPIs** — the kind of system used across the automotive industry to digitalize traditional planning tools.
 
-| Skill Demonstrated | Implementation |
+The project demonstrates skills relevant to roles in automotive IT, sales planning, supplier quality, and data-driven operations:
+
+| Capability | How This Project Covers It |
 | --- | --- |
-| Interactive KPI dashboards | Live browser-based dashboard, zero install required |
-| Anomaly detection & defect flagging | Rule-based AI engine auto-detects 33 planning deviations |
-| Scenario planning & forecasting | 5-slider real-time recalculation with 3-band scenario chart |
-| Testing (smoke / regression / E2E / UAT) | Full `test_suite.py` covering all four phases |
-| Python data pipeline | `data_engine.py` — data generation, analysis, CSV/JSON export |
-| Data visualisation | Chart.js (browser) + Matplotlib (Python reports) |
+| Cloud-ready volume planning application | Interactive browser-based dashboard (zero install) |
+| UAT / smoke / regression / E2E testing | `test_suite.py` covers all four testing phases |
+| Anomaly detection & process optimisation | Rule-based AI engine auto-detects 33 planning issues |
+| KPI dashboards & reporting | Live KPI panel + matplotlib charts + CSV exports |
+| Scenario planning & risk modelling | Real-time slider engine for demand, capacity, and mix |
+| Cross-functional data architecture | Multi-market, multi-plant data model |
+| Python programming | Full Python data pipeline (`data_engine.py`) |
+| AI & LLM tooling | AI Insights tab with automated recommendations |
 
 ---
 
-## Dashboard Features
+## Live Dashboard Features
 
 ### Overview Tab
-- 4 live KPIs: units sold, revenue, plan accuracy, stock balance index
-- Monthly Volume vs Plan chart (actual vs planned with deviation shading)
-- Regional market share, top models by volume, powertrain mix (BEV/PHEV/ICE)
-- Market filter: Global, Europe, Germany, USA, China
+
+- **4 Live KPIs**: Total units sold, revenue, plan accuracy, stock balance index
+- **Sparkline trend indicators** per KPI
+- **Monthly Volume vs Plan** bar + line chart (actual vs planned with deviation shading)
+- **Regional market share** donut chart (Europe / Germany / USA / China / RoW)
+- **Top 10 models by volume** (horizontal bar)
+- **Powertrain mix** (BEV / PHEV / ICE split with EU mandate tracking)
+- **Revenue per model** (average transaction value)
+- Market filter: switch between Global, Europe, Germany, USA, China
 
 ### Scenario Planning Tab
-- 5 real-time sliders: demand uplift, production capacity, BEV mix, price, market weight
-- Instant recalculation of volume, revenue, BEV share, plan accuracy, capacity utilisation
-- Optimistic / Base / Pessimistic / Planned scenario chart
+
+- **5 real-time sliders**: Demand uplift, Production capacity, BEV mix target, Price adjustment, EU market weight
+- Instantly recalculates projected volume, revenue, BEV share, plan accuracy, capacity utilisation
+- **3-band scenario chart**: Optimistic / Base / Pessimistic / Planned
+- Live KPI impact summary with animated progress bars
 
 ### Stock & Capacity Tab
-- Days of Supply per model — colour-coded (red = critical, amber = warning, green = ok)
-- Plant capacity utilisation across 5 facilities
-- Live stock tracker: 8 models × key metrics with status indicators
+
+- **Days of Supply by model** — colour-coded (red = critical, amber = warning, green = ok) with 45–60 day target bands
+- **Plant capacity utilisation** across 5 facilities
+- **Live Stock Tracker table**: 8 models × key metrics with status pills
 
 ### AI Insights Tab
-- 6 auto-generated insight cards: anomaly, recommendation, forecast deviation, optimisation, risk alert, data integrity
-- LSTM-style forecast confidence band chart
-- Defect/issue tracker with severity, owner, and age
+
+- **6 auto-generated insight cards**: Anomaly, Recommendation, Forecast Deviation, Optimisation, Risk Alert, Data Integrity
+- **LSTM-style forecast confidence band chart** (upper / lower bounds + actuals)
+- **Defect / Issue Tracker**: 5 open planning deviations with severity, owner, and age
+
+---
+
+## Repository Structure
+
+```
+autosales-dashboard/
+│
+├── dashboard.html          # Main interactive dashboard (open in browser)
+├── data_engine.py          # Python data generation + analysis pipeline
+├── test_suite.py           # Testing module (smoke / regression / E2E / UAT)
+│
+├── output/                 # Auto-generated by data_engine.py
+│   ├── chart_A_volume_vs_plan.png
+│   ├── chart_B_kpi_dashboard.png
+│   ├── chart_C_stock_heatmap.png
+│   ├── kpi_monthly_summary.csv
+│   ├── stock_status_report.csv
+│   ├── anomaly_defect_log.csv
+│   └── dashboard_summary.json
+│
+└── README.md
+```
 
 ---
 
 ## How to Run
 
-**Dashboard** (no install needed)
+### Dashboard (no install required)
+
+```bash
+# Simply open in any browser:
+open dashboard.html
+# or double-click the file in your file explorer
+```
+
+### Python Pipeline
+
+```bash
+# Requirements
+pip install pandas numpy matplotlib
+
+# Run the full data engine
+python data_engine.py
+```
+
+This generates:
+
+- 3 publication-quality matplotlib charts
+- 3 CSV reports (monthly KPIs, stock status, anomaly log)
+- 1 JSON summary for dashboard integration
+
+### Test Suite
+
+```bash
+python test_suite.py
+```
+
+Runs 4 phases of tests (smoke → regression → E2E → UAT) with pass/fail reporting.
+
+---
+
+## Technical Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    DATA LAYER (Python)                       │
+│  data_engine.py                                              │
+│  ├── Volume Generator  (seasonality + trend + noise model)   │
+│  ├── Regional Splitter (market weight allocation)            │
+│  ├── Stock Calculator  (days of supply per model/region)     │
+│  ├── Anomaly Engine    (rule-based defect detection)         │
+│  └── Report Exporter   (CSV + JSON + matplotlib charts)      │
+└────────────────────────┬────────────────────────────────────┘
+                         │ JSON / embedded data
+┌────────────────────────▼────────────────────────────────────┐
+│                  PRESENTATION LAYER (HTML/JS)                │
+│  dashboard.html                                              │
+│  ├── Tab Router        (Overview / Scenario / Stock / AI)    │
+│  ├── Chart Engine      (Chart.js — 8 interactive charts)     │
+│  ├── Scenario Engine   (real-time slider recalculation)      │
+│  ├── Anomaly Renderer  (insight cards + defect tracker)      │
+│  └── Market Filter     (5 markets, live KPI update)          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Key Technical Choices
+
+| Component | Technology | Why |
+| --- | --- | --- |
+| Data generation | Python + NumPy/Pandas | Industry-standard data stack |
+| Visualisation (Python) | Matplotlib | Publication-quality, no external server needed |
+| Visualisation (browser) | Chart.js | Lightweight, interactive, zero-dependency |
+| Dashboard | Vanilla HTML/CSS/JS | No framework needed — fast, portable, runs anywhere |
+| Testing | Python unittest | Standard, structured, mirrors real CI/CD test suites |
+| Export | CSV + JSON | Interoperable with Excel, QuickSight, Salesforce, etc. |
+
+---
+
+## Sample Output — KPI Summary
+
+| Month | Actual Units | Planned Units | Variance % | Plan Accuracy |
+| --- | --- | --- | --- | --- |
+| Jan 2025 | 184,221 | 180,114 | +2.28% | 97.72% |
+| Mar 2025 | 221,847 | 215,980 | +2.72% | 97.28% |
+| Jun 2025 | 218,340 | 214,902 | +1.60% | 98.40% |
+| Sep 2025 | 230,914 | 227,112 | +1.67% | 98.33% |
+| Dec 2025 | 226,810 | 222,450 | +1.96% | 98.04% |
+
+**Full Year: 2,210,483 units · Plan Accuracy: 96.0% · BEV Share: 27.9%**
+
+---
+
+## Anomaly Detection — Sample Output
+
+The AI engine automatically detected **33 planning issues** in the simulated dataset:
+
+```
+[CRITICAL] Plan Deviation    — iX, Mar 2025:  Variance +16.4% vs plan
+[CRITICAL] Stock Alert       — X3, Germany:   Only 28d supply (min: 45d)
+[WARNING]  Overstock Risk    — M3, USA:        88d supply (max: 60d)
+[CRITICAL] Capacity Overload — Leipzig plant:  97.4% utilisation
+[WARNING]  Plan Deviation    — 5 Series:       -11.2% below plan in Q3
+```
+
+Each anomaly includes a **recommended action** — mirroring real automotive planning workflows.
+
+---
+
+## Testing Architecture
+
+The `test_suite.py` module implements 4 phases that mirror automotive industry software release processes:
+
+| Phase | What It Tests | Real-world Analogy |
+| --- | --- | --- |
+| **Smoke Tests** | Core data structures load correctly | Feature rollout smoke check |
+| **Regression Tests** | KPI formulas produce consistent results | Regression after code change |
+| **End-to-End Tests** | Full pipeline: generate → analyse → export | E2E test of planning workflow |
+| **UAT Tests** | Business rule validation (DOS targets, accuracy thresholds) | User acceptance criteria |
+
+---
+
+## About the Author
+
+**Ambika Sugganahalli Mahadevappa**  
+M.Sc. Information & Electrical Engineering · Hochschule Wismar  
+2 years · Amazon · Senior Compliance Associate · Tool Rollout & UAT
+
+📧 ambikasm.1820@gmail.com · 📍 Cologne, Germany (open to relocation)  
+🔗 [LinkedIn](https://linkedin.com/in/ambika-sugganahalli-mahadevappa-b49261188)
